@@ -123,7 +123,7 @@ df <- arrange(df,match(Month,sortorder),Theme)
 
 plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
   hc_plotOptions(column = list(stacking = "normal")) %>%
-  hc_title(text = "Number of indicators to update per month", align = "left", 
+  hc_title(text = "Indicator updates schedule", align = "left", 
            style = list(fontSize ="32px",color = "#0d2e5b", 
                         fontFamily = "Arial", fontWeight = "400" ))%>% 
   hc_xAxis(title = list(text = "")) %>%
