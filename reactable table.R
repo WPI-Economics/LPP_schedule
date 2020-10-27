@@ -3,6 +3,12 @@
 library(tidyverse)
 library(googlesheets4)
 library(reactable)
+library(crosstalk)
+library(shiny)
+
+#######################################################################################
+######################### MAKES THE TABLE #############################################
+#######################################################################################
 
 gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDccccDcD")
 #"ccciccccDDccccDcD"
@@ -53,10 +59,11 @@ gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPP
 #grouped by month
 
  gsheet_LPPdates2 <- gsheet_LPPdates2 %>% arrange(match(Month, sortorder)) #SORT FIRST TO MAKE SURE URL INDEX IS CORRECT ORDER
-gsheet_LPPdates2 %>% 
+
+ table <- gsheet_LPPdates2 %>% 
   
   select(Theme,Index ,`Slug`, `Data source`,`Frequency`, `Full publication date`, Month)  %>%
-  
+ 
  
   reactable(groupBy = "Month", columns = list(
     Index = colDef(aggregate = "unique"),
@@ -80,5 +87,54 @@ gsheet_LPPdates2 %>%
                          "&[aria-sort='ascending'], &[aria-sort='descending']" = list(background = "#8c8c8c"),
                          borderColor = "#8c8c8c"
       )
-    ), filterable = T) 
+    ), filterable = T, sortable = F) 
+
+
+
+# #######################################################################################
+# ######################### MAKES THE GANT #############################################
+# #######################################################################################
+# 
+# library(timevis)
+# 
+# gsheet_LPPdates2$end_date <- gsheet_LPPdates2$`Full publication date`+7
+# 
+# gsheet_LPPdates2$group <- NA
+# gsheet_LPPdates2$group[gsheet_LPPdates2$Theme == "Shared opportunity"] <- 1
+# gsheet_LPPdates2$group[gsheet_LPPdates2$Theme == "People"] <- 2
+# gsheet_LPPdates2$group[gsheet_LPPdates2$Theme == "Living standards"] <- 3
+# gsheet_LPPdates2$group[gsheet_LPPdates2$Theme == "Work"] <- 4
+# gsheet_LPPdates2$group[gsheet_LPPdates2$Theme == "Housing"] <- 5
+# 
+# groups <- data.frame(id = unique(gsheet_LPPdates2$group) ,content = unique(gsheet_LPPdates2$Theme))
+# 
+# 
+# na.omit(gsheet_LPPdates2) %>% select(content = Index,
+#                                      start = `Full publication date`, 
+#                                      end = end_date,
+#                                      group = group) %>% 
+#   timevis(groups = groups)
+
+library(highcharter)
+
+df <- na.omit(gsheet_LPPdates2) %>% group_by(Month, Theme) %>% summarise(count = n())
+df <- arrange(df,match(Month,sortorder),Theme)
+
+
+plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
+  hc_plotOptions(column = list(stacking = "normal")) %>%
+  hc_title(text = "Number of indicators to update per month", align = "left", 
+           style = list(fontSize ="32px",color = "#0d2e5b", 
+                        fontFamily = "Arial", fontWeight = "400" ))%>% 
+  hc_xAxis(title = list(text = "")) %>%
+  hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
+  
+
+sd_table <- SharedData$new(table, group = "gw", key = ~Theme)
+sd_plot <- SharedData$new(plot, group = "gw", key = ~Theme)
+
+combo <- htmltools::tagList(plot, table)
+htmltools::browsable(combo)
+htmltools::save_html(combo, "index.html") 
+
 
