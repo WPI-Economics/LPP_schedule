@@ -42,16 +42,29 @@ gsheet_LPPdates2 <- gsheet_LPPdates2 %>%
 sortorder <- c("October-2020","November-2020","December-2020","January-2021","February-2021","March-2021","April-2021","May-2021",
                "June-2021","July-2021","August-2021","September-2021","October-2021","November-2021","December-2021")
 
+Slug = colDef(html = T, cell = function(value, index){
+  sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
+}
+
+
+gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value))
+
+
 #grouped by month
+
+ gsheet_LPPdates2 <- gsheet_LPPdates2 %>% arrange(match(Month, sortorder)) #SORT FIRST TO MAKE SURE URL INDEX IS CORRECT ORDER
 gsheet_LPPdates2 %>% 
   
-  select(Theme,Index ,Slug, `Data source`,`Frequency`, `Full publication date`, Month)  %>%
+  select(Theme,Index ,`Slug`, `Data source`,`Frequency`, `Full publication date`, Month)  %>%
   
-  arrange(match(Month, sortorder)) %>% 
-  
+ 
   reactable(groupBy = "Month", columns = list(
     Index = colDef(aggregate = "unique"),
-    `Theme`=  colDef(aggregate = "frequency")),
+    `Theme`=  colDef(aggregate = "frequency"),
+    Slug = colDef(html = T, cell = function(value, index){
+      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
+    })
+    ),
     
     defaultPageSize = 19,
     highlight = T,
