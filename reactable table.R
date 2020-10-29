@@ -10,11 +10,11 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDccccDcD")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcD")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
-  select(Theme, `Sub-theme`, `Current data`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...17`, `LPP link`, 
+  select(Theme, `Sub-theme`, `Current data`,`data link`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...18`, `LPP link`, 
          `Blocker (yes/no) i.e. can't update untiol released`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
@@ -62,7 +62,7 @@ gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPP
 
  table <- gsheet_LPPdates2 %>% 
   
-  select(Theme,Index ,`Slug`, `Data source`,`Frequency`, `Full publication date`, Month)  %>%
+  select(Theme,Index ,`Slug`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month)  %>%
  
  
   reactable(groupBy = "Month", columns = list(
@@ -71,7 +71,11 @@ gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPP
     Slug = colDef(html = T, cell = function(value, index){
       sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
     })
-    ),
+    ,
+    `data link` = colDef(html = T, cell = function(value, index){
+      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`data link`[index], value)
+    })
+  ),
     
     defaultPageSize = 19,
     highlight = T,
@@ -135,6 +139,6 @@ sd_plot <- SharedData$new(plot, group = "gw", key = ~Theme)
 
 combo <- htmltools::tagList(plot, table)
 htmltools::browsable(combo)
-htmltools::save_html(combo, "index.html") 
+#htmltools::save_html(combo, "index.html") 
 
 
