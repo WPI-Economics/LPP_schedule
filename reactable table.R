@@ -10,12 +10,12 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcD")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDc")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
   select(Theme, `Sub-theme`, `Current data`,`data link`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...18`, `LPP link`, 
-         `Blocker (yes/no) i.e. can't update untiol released`)
+         `Blocker (yes/no) i.e. can't update untiol released`,`LPP update frequency comments`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
 
@@ -48,12 +48,12 @@ gsheet_LPPdates2 <- gsheet_LPPdates2 %>%
 sortorder <- c("October-2020","November-2020","December-2020","January-2021","February-2021","March-2021","April-2021","May-2021",
                "June-2021","July-2021","August-2021","September-2021","October-2021","November-2021","December-2021")
 
-Slug = colDef(html = T, cell = function(value, index){
-  sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
-}
-
-
-gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value))
+# Slug = colDef(html = T, cell = function(value, index){
+#   sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
+# }
+# 
+# 
+# gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value))
 
 
 #grouped by month
@@ -62,7 +62,7 @@ gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPP
 
  table <- gsheet_LPPdates2 %>% 
   
-  select(Theme,Index ,`Slug`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month)  %>%
+  select(Theme,Index ,`Slug`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month, `LPP update frequency comments`)  %>%
  
  
   reactable(groupBy = "Month", columns = list(
@@ -121,7 +121,7 @@ gsheet_LPPdates2$url <- sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPP
 
 library(highcharter)
 
-df <- na.omit(gsheet_LPPdates2) %>% group_by(Month, Theme) %>% summarise(count = n())
+df <- gsheet_LPPdates2 %>% filter(Month >0) %>% group_by(Month, Theme) %>% summarise(count = n())
 df <- arrange(df,match(Month,sortorder),Theme)
 
 
@@ -139,6 +139,6 @@ sd_plot <- SharedData$new(plot, group = "gw", key = ~Theme)
 
 combo <- htmltools::tagList(plot, table)
 htmltools::browsable(combo)
-#htmltools::save_html(combo, "index.html") 
+htmltools::save_html(combo, "index.html") 
 
 
