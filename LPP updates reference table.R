@@ -14,7 +14,7 @@ gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sh
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
-  select(Theme, `Sub-theme`, `Current data`,`data link`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...18`, `LPP link`, 
+  select(Theme, `Sub-theme`, `Current data`,`Last update date`,`data link`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...18`, `LPP link`, 
          `Blocker (yes/no) i.e. can't update untiol released`,`LPP update frequency comments`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
@@ -62,7 +62,7 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
 
  table <- gsheet_LPPdates2 %>% 
   
-  select(Theme,Index ,`Slug`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month, `LPP update frequency comments`)  %>%
+  select(Theme,Index ,`Slug`,`Last update date`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month, `LPP update frequency comments`)  %>%
  
  
   reactable(groupBy = "Month", columns = list(
@@ -133,9 +133,6 @@ plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
   hc_xAxis(title = list(text = "")) %>%
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
   
-
-sd_table <- SharedData$new(table, group = "gw", key = ~Theme)
-sd_plot <- SharedData$new(plot, group = "gw", key = ~Theme)
 
 combo <- htmltools::tagList(plot, table)
 htmltools::browsable(combo)
