@@ -10,11 +10,11 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDc")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDcD")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
-  select(Theme, `Sub-theme`, `Current data`,`Last update date`,`data link`,Index,`Components split`, Slug, Frequency,'Full publication date' = `Pulication month...18`, `LPP link`, 
+  select(Theme, `Sub-theme`, `Current data`,`Last update date`,`data link`,Index,`Components split`, Slug, `Data release frequency`,'Full publication date' = `Pulication month...18`, `LPP link`, 
          `Blocker (yes/no) i.e. can't update untiol released`,`LPP update frequency comments`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
@@ -123,7 +123,11 @@ library(highcharter)
 
 df <- gsheet_LPPdates2 %>% filter(Month >0) %>% group_by(Month, Theme) %>% summarise(count = n())
 df <- arrange(df,match(Month,sortorder),Theme)
-
+idx <- data.frame(Month = unique(df$Month))
+idx$monthorder <- rownames(idx)
+df <- merge(df, idx, by = "Month")
+df <- arrange(df,match(Month,sortorder),Theme)
+df$monthorder <- as.numeric(df$monthorder)
 
 plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
   hc_plotOptions(column = list(stacking = "normal")) %>%
@@ -132,7 +136,7 @@ plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
                         fontFamily = "Arial", fontWeight = "400" ))%>% 
   hc_xAxis(title = list(text = "")) %>%
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
-  
+plot 
 
 combo <- htmltools::tagList(plot, table)
 htmltools::browsable(combo)
