@@ -10,12 +10,23 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDcD")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDcDc")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
-  select(Theme, `Sub-theme`, `Current data`,`Last update date`,`data link`,Index,`Components split`, Slug, `Data release frequency`,'Full publication date' = `Pulication month...18`, `LPP link`, 
-         `Blocker (yes/no) i.e. can't update untiol released`,`LPP update frequency comments`)
+  select(Theme, 
+         `Sub-theme`, 
+         `Current data`,
+         `Last update date`,
+         `data link`,Index,
+         `Components split`, 
+         Slug, 
+         `Data release frequency`,
+         `Data publication date`, 
+         `LPP link`, 
+         `Blocker (yes/no) i.e. can't update untiol released`,
+         `LPP update frequency comments`,
+         `LPP Publication frequency`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
 
@@ -35,7 +46,7 @@ gsheet_LPPdates2$Slug <- str_replace(gsheet_LPPdates2$Slug, " \\(.*\\)", "")
 
 #make some nicer date columns
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% 
-  mutate(Month = format(`Full publication date`, "%B-%Y"))
+  mutate(Month = format(`Data publication date`, "%B-%Y"))
 
 # #grouped by theme
 # gsheet_LPPdates2 %>% select(Theme,Index ,Slug, `Data source`, `Full publication date`, Month)  %>% 
@@ -62,7 +73,16 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
 
  table <- gsheet_LPPdates2 %>% 
   
-  select(Theme,Index ,`Slug`,`Last update date`, `Data source`,`data link`,`Frequency`, `Full publication date`, Month, `LPP update frequency comments`)  %>%
+  select(Theme,
+         Index ,
+         `Slug`,
+         `Data source`,
+                  `Data publication date`, 
+         Month,
+         `Data release frequency`, 
+         `LPP update frequency comments`,
+         `LPP Publication frequency`,
+         `Last update date`)  %>%
  
  
   reactable(groupBy = "Month", columns = list(
@@ -72,7 +92,7 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
       sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
     })
     ,
-    `data link` = colDef(html = T, cell = function(value, index){
+    `Data source` = colDef(html = T, cell = function(value, index){
       sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`data link`[index], value)
     })
   ),
