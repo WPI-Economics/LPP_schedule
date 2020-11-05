@@ -48,6 +48,8 @@ gsheet_LPPdates2$Slug <- str_replace(gsheet_LPPdates2$Slug, " \\(.*\\)", "")
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% 
   mutate(Month = format(`Data publication date`, "%B-%Y"))
 
+
+
 # #grouped by theme
 # gsheet_LPPdates2 %>% select(Theme,Index ,Slug, `Data source`, `Full publication date`, Month)  %>% 
 #   reactable( groupBy = "Theme", columns = list(
@@ -77,25 +79,25 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
          Index ,
          `Slug`,
          `Data source`,
-                  `Data publication date`, 
+          `Data publication date`, 
          Month,
          `Data release frequency`, 
          `LPP update frequency comments`,
          `LPP Publication frequency`,
          `Last update date`)  %>%
- 
- 
-  reactable(groupBy = "Month", columns = list(
+   
+  reactable(groupBy = "Month", 
+            columns = list(
     Index = colDef(aggregate = "unique"),
     `Theme`=  colDef(aggregate = "frequency"),
     Slug = colDef(html = T, cell = function(value, index){
       sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
-    })
-    ,
+    }),
+
     `Data source` = colDef(html = T, cell = function(value, index){
       sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`data link`[index], value)
     })
-  ),
+    ),
     
     defaultPageSize = 19,
     highlight = T,
@@ -141,7 +143,7 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
 
 library(highcharter)
 
-df <- gsheet_LPPdates2 %>% filter(Month >0) %>% group_by(Month, Theme) %>% summarise(count = n())
+df <- gsheet_LPPdates2 %>% filter(!is.na(Month)) %>% group_by(Month, Theme) %>% summarise(count = n())
 df <- arrange(df,match(Month,sortorder),Theme)
 idx <- data.frame(Month = unique(df$Month))
 idx$monthorder <- rownames(idx)
@@ -149,12 +151,12 @@ df <- merge(df, idx, by = "Month")
 df <- arrange(df,match(Month,sortorder),Theme)
 df$monthorder <- as.numeric(df$monthorder)
 
-plot <- hchart(df, "column", hcaes(x = Month, y = count, group = Theme)) %>%
+plot <- hchart(df, "column", hcaes(monthorder, count, group = Theme)) %>%
   hc_plotOptions(column = list(stacking = "normal")) %>%
   hc_title(text = "Indicator updates schedule", align = "left", 
            style = list(fontSize ="32px",color = "#0d2e5b", 
                         fontFamily = "Arial", fontWeight = "400" ))%>% 
-  hc_xAxis(title = list(text = "")) %>%
+  hc_xAxis(title = list(text = ""), categories = c("blank",unique(df$Month))) %>%
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
 plot 
 
