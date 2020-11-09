@@ -10,7 +10,7 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDcDc")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW essential", col_types = "ccciccccDDcccccDcDcDcci")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
@@ -26,10 +26,10 @@ gsheet_LPPdates2 <- gsheet_LPPdates %>%
          `LPP link`, 
          `Blocker (yes/no) i.e. can't update untiol released`,
          `LPP update frequency comments`,
-         `LPP Publication frequency`)
+         `LPP Publication frequency`, `Remove flag`)
 
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Blocker (yes/no) i.e. can't update untiol released` == "yes") #select just data sets that HAVE to be updated before we can process
-
+gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(is.na(`Remove flag`))
 
 #make a index var adding in the component number
 gsheet_LPPdates2$`Components split`[is.na(gsheet_LPPdates2$`Components split`)] <- 0
