@@ -10,7 +10,7 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW essential", col_types = "ccciccccDDcccccDcDcDcci")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDDcccccDcDcDcci")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
@@ -23,6 +23,7 @@ gsheet_LPPdates2 <- gsheet_LPPdates %>%
          Slug, 
          `Data release frequency`,
          `Data publication date`, 
+         `Pulication month`,
          `LPP link`, 
          `Blocker (yes/no) i.e. can't update untiol released`,
          `LPP update frequency comments`,
@@ -46,7 +47,7 @@ gsheet_LPPdates2$Slug <- str_replace(gsheet_LPPdates2$Slug, " \\(.*\\)", "")
 
 #make some nicer date columns
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% 
-  mutate(Month = format(`Data publication date`, "%B-%Y"))
+  mutate(Month = format(`Pulication month`, "%B-%Y"))
 
 
 
@@ -78,13 +79,13 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
   select(Theme,
          Index ,
          `Slug`,
+         `Last update date`,
          `Data source`,
           `Data publication date`, 
-         Month,
+         `Month`,
          `Data release frequency`, 
-         `LPP update frequency comments`,
-         `LPP Publication frequency`,
-         `Last update date`)  %>%
+         `LPP Publication frequency`
+                  )  %>%
    
   reactable(groupBy = "Month", 
             columns = list(
@@ -145,8 +146,6 @@ library(highcharter)
 
 df <- gsheet_LPPdates2 %>% filter(!is.na(Month)) %>% group_by(Month, Theme) %>% summarise(count = n())
 df <- arrange(df,match(Month,sortorder),Theme)
-idx <- data.frame(Month = unique(df$Month))
-idx$monthorder <- rownames(idx)
 df <- merge(df, idx, by = "Month")
 df <- arrange(df,match(Month,sortorder),Theme)
 df$monthorder <- as.numeric(df$monthorder)
