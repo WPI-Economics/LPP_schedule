@@ -146,6 +146,8 @@ library(highcharter)
 
 df <- gsheet_LPPdates2 %>% filter(!is.na(Month)) %>% group_by(Month, Theme) %>% summarise(count = n())
 df <- arrange(df,match(Month,sortorder),Theme)
+idx <- data.frame(Month = unique(df$Month))
+idx$monthorder <- rownames(idx)
 df <- merge(df, idx, by = "Month")
 df <- arrange(df,match(Month,sortorder),Theme)
 df$monthorder <- as.numeric(df$monthorder)

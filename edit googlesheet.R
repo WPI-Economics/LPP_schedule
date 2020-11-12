@@ -1,3 +1,4 @@
+library(trelloR)
 library(googlesheets4)
 
 
@@ -24,4 +25,11 @@ gsheet_LPPdates$`Last update date`[gsheet_LPPdates$Index %in% Updated$index] <- 
 
 
 range_write("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", data.frame(gsheet_LPPdates$`Last update date`), range = "T2")
+
+
+
+
+
+get_board_fields(BID)
+
                                                                  
