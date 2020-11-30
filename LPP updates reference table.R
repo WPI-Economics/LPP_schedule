@@ -153,8 +153,8 @@ df$monthorder <- as.numeric(df$monthorder)
 
 plot <- hchart(df, "column", hcaes(monthorder, count, group = Theme)) %>%
   hc_plotOptions(column = list(stacking = "normal")) %>%
-  hc_title(text = "Indicator updates schedule", align = "left", 
-           style = list(fontSize ="32px",color = "#0d2e5b", 
+  hc_title(text = paste0("Indicator updates schedule. <br>Last updated: ",Sys.Date()), align = "left", 
+           style = list(fontSize ="30px",color = "#0d2e5b", 
                         fontFamily = "Arial", fontWeight = "400" ))%>% 
   hc_xAxis(title = list(text = ""), categories = c("blank",unique(df$Month))) %>%
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
