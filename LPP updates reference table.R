@@ -10,7 +10,7 @@ library(shiny)
 ######################### MAKES THE TABLE #############################################
 #######################################################################################
 
-gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDccccDcDDcci")
+gsheet_LPPdates <- read_sheet("1rzjtZdAyclF-RFuqZB32Wo0wiQNIXAqX-NFx03rQzAo", sheet = "RAW", col_types = "ccciccccDccccDcDDccic")
 #"ccciccccDDccccDcD"
 
 gsheet_LPPdates2 <- gsheet_LPPdates %>%  
