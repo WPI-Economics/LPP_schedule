@@ -59,7 +59,9 @@ gsheet_LPPdates2 <- gsheet_LPPdates2 %>%
 
 
 sortorder <- c("October-2020","November-2020","December-2020","January-2021","February-2021","March-2021","April-2021","May-2021",
-               "June-2021","July-2021","August-2021","September-2021","October-2021","November-2021","December-2021")
+               "June-2021","July-2021","August-2021","September-2021","October-2021","November-2021","December-2021",
+               "January-2022","February-2022","March-2022","April-2022","May-2022",
+               "June-2022","July-2022","August-2022","September-2022","October-2022","November-2022","December-2022")
 
 # Slug = colDef(html = T, cell = function(value, index){
 #   sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
@@ -151,12 +153,26 @@ df <- merge(df, idx, by = "Month")
 df <- arrange(df,match(Month,sortorder),Theme)
 df$monthorder <- as.numeric(df$monthorder)
 
+#remove past months
+df <- df %>% filter(
+  as.Date(
+    paste0("01-",df$Month),"%d-%B-%Y") > Sys.Date()-32
+    )
+                    
+
+  
+
 plot <- hchart(df, "column", hcaes(monthorder, count, group = Theme)) %>%
+  
   hc_plotOptions(column = list(stacking = "normal")) %>%
+  
   hc_title(text = paste0("Indicator updates schedule. <br>Last updated: ",Sys.Date()), align = "left", 
-           style = list(fontSize ="30px",color = "#0d2e5b", 
-                        fontFamily = "Arial", fontWeight = "400" ))%>% 
-  hc_xAxis(title = list(text = ""), categories = c("blank",unique(df$Month))) %>%
+           style = list(fontSize ="24px",color = "#0d2e5b", 
+                        fontFamily = "Arial", fontWeight = "400" )) %>% 
+  
+  hc_xAxis(title = list(text = ""), categories = c(rep("blank",8),unique(df$Month))) %>%
+
+  
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
 plot 
 
