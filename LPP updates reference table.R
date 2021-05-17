@@ -75,7 +75,14 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
 
  gsheet_LPPdates2 <- gsheet_LPPdates2 %>% arrange(match(Month, sortorder)) #SORT FIRST TO MAKE SURE URL INDEX IS CORRECT ORDER
 
- table <- gsheet_LPPdates2 %>% 
+ #remove past months
+ gsheet_LPPdates2x <- gsheet_LPPdates2 %>% filter(
+   as.Date(
+     paste0("01-",gsheet_LPPdates2$Month),"%d-%B-%Y") > Sys.Date()-32
+ )
+ 
+ 
+ table <- gsheet_LPPdates2x %>% 
   
   select(Theme,
          Index ,
