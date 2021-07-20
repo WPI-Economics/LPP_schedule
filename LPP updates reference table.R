@@ -177,8 +177,8 @@ plot <- hchart(df, "column", hcaes(monthorder, count, group = Theme)) %>%
            style = list(fontSize ="24px",color = "#0d2e5b", 
                         fontFamily = "Arial", fontWeight = "400" )) %>% 
   
-  hc_xAxis(title = list(text = ""), categories = c(rep("blank",8),unique(df$Month))) %>%
-
+  hc_xAxis(title = list(text = ""), categories = c(rep("blank",10),unique(df$Month))) %>%
+#c(rep("blank",8),unique(df$Month))
   
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
 plot 
