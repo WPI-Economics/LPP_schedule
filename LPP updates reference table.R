@@ -78,7 +78,7 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
  #remove past months
  gsheet_LPPdates2x <- gsheet_LPPdates2 %>% filter(
    as.Date(
-     paste0("01-",gsheet_LPPdates2$Month),"%d-%B-%Y") > Sys.Date()-32
+     paste0("01-",gsheet_LPPdates2$Month),"%d-%B-%Y") > Sys.Date()-92
  )
  
  
@@ -163,7 +163,7 @@ df$monthorder <- as.numeric(df$monthorder)
 #remove past months
 df <- df %>% filter(
   as.Date(
-    paste0("01-",df$Month),"%d-%B-%Y") > Sys.Date()-32
+    paste0("01-",df$Month),"%d-%B-%Y") > Sys.Date()-92
     )
                     
 
@@ -177,7 +177,7 @@ plot <- hchart(df, "column", hcaes(monthorder, count, group = Theme)) %>%
            style = list(fontSize ="24px",color = "#0d2e5b", 
                         fontFamily = "Arial", fontWeight = "400" )) %>% 
   
-  hc_xAxis(title = list(text = ""), categories = c(rep("blank",10),unique(df$Month))) %>%
+  hc_xAxis(title = list(text = ""), categories = c(rep("blank",8),unique(df$Month))) %>%
 #c(rep("blank",8),unique(df$Month))
   
   hc_colors(c("#8fb7e4", "#bc323b","#186fa9", "#d07f20","#0d2e5b", "#e2b323" ))
