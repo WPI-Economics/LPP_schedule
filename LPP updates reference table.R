@@ -100,11 +100,11 @@ sortorder <- c("October-2020","November-2020","December-2020","January-2021","Fe
     Index = colDef(aggregate = "unique"),
     `Theme`=  colDef(aggregate = "frequency"),
     Slug = colDef(html = T, cell = function(value, index){
-      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`LPP link`[index], value)
+      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2x$`LPP link`[index], value)
     }),
 
     `Data source` = colDef(html = T, cell = function(value, index){
-      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2$`data link`[index], value)
+      sprintf('<a href="%s" target="_blank">%s</a>',gsheet_LPPdates2x$`data link`[index], value)
     })
     ),
     
