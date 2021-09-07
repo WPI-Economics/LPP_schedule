@@ -5,6 +5,7 @@ library(googlesheets4)
 library(reactable)
 library(crosstalk)
 library(shiny)
+library(lubridate)
 
 #######################################################################################
 ######################### MAKES THE TABLE #############################################
@@ -48,6 +49,10 @@ gsheet_LPPdates2$Slug <- str_replace(gsheet_LPPdates2$Slug, " \\(.*\\)", "")
 gsheet_LPPdates2 <- gsheet_LPPdates2 %>% 
   mutate(Month = format(`Pulication month`, "%B-%Y"))
 
+#SELECT ONLY INDICATORS WHERE DATA PUBLICATION DATE IS AFTER MOST RECENT PUBLICATION DATE
+gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(`Last update date` <= `Pulication month`)
+#REMOVE INDICATORS UPDATED THE PREVIOUS MONTH
+gsheet_LPPdates2 <- gsheet_LPPdates2 %>% filter(month(`Last update date`) != month(Sys.Date())-1)
 
 
 # #grouped by theme
