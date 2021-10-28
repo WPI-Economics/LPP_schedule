@@ -8,7 +8,7 @@ library(crosstalk)
 library(shiny)
 library(lubridate)
 
-update.df <- readRDS("LPP_schedule_data_2021-10-25.RDS") #WILL NEED TO EDIT DATE HERE
+update.df <- readRDS("LPP_schedule_data_2021-10-28.RDS") #WILL NEED TO EDIT DATE HERE
 
 #create backlop category for processing months in the past
 update.df$month.formatted <- as.Date(paste0("01-",update.df$Month), format = "%d-%B-%Y")
