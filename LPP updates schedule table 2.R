@@ -7,8 +7,9 @@ library(reactable)
 library(crosstalk)
 library(shiny)
 library(lubridate)
+library(htmltools)
 
-update.df <- readRDS("LPP_schedule_data_2021-10-28.RDS") #WILL NEED TO EDIT DATE HERE
+update.df <- readRDS("LPP_schedule_data_2021-11-01.RDS") #WILL NEED TO EDIT DATE HERE
 
 #create backlop category for processing months in the past
 update.df$month.formatted <- as.Date(paste0("01-",update.df$Month), format = "%d-%B-%Y")
@@ -65,4 +66,11 @@ table <- update.df %>% select(-`data link`, -month.formatted) %>%
             ), filterable = T, sortable = F) 
 table
 
-htmltools::save_html(table, "index.html") 
+withtitle <- htmlwidgets::prependContent(table, 
+                                         h2(class = "title", style = "font-family: Arial; color: #0d2e5b",
+                                            paste0("LPP Publishing Schedule - Last updated ", Sys.Date() ), 
+                                            ) 
+                                         )
+
+
+save_html(withtitle, "index.html") 
