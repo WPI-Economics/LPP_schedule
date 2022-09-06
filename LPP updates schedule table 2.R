@@ -9,7 +9,10 @@ library(shiny)
 library(lubridate)
 library(htmltools)
 
-update.df <- readRDS("LPP_schedule_data_2022-08-02.RDS") #WILL NEED TO EDIT DATE HERE
+update.df <- readRDS("LPP_schedule_data_2022-09-06.RDS") #WILL NEED TO EDIT DATE HERE
+
+
+
 
 #create backlop category for processing months in the past
 update.df$month.formatted <- as.Date(paste0("01-",update.df$Month), format = "%d-%B-%Y")
@@ -31,6 +34,8 @@ update.df <- arrange(update.df,month.formatted)
 
 # update.df <- update.df %>% arrange(match(Month, sortorder)) #SORT FIRST TO MAKE SURE URL INDEX IS CORRECT ORDER
 
+#REMOVE HBAI and FRS for 2022 due to data reliability issues with survey following covid
+update.df <- update.df %>% filter(!(str_detect(`Current data`, "HBAI|FRS", negate = F) & `New data publication date` < '2022-12-31'))
 
 #The table 
 update.df2 <- update.df
