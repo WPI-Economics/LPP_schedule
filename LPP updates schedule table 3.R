@@ -17,6 +17,9 @@ update.df$`Data source frequency` <- str_to_title(update.df$`Data source frequen
 update.df <- update.df %>% filter(
   `Source data release date` < "2024-12-31"
 )
+
+update.df$`Data reference period next update` <- update.df$time_period_next
+update.df$time_period_next <- NULL
 #remove blocked ad-hoc etc
 update.df <- update.df %>% filter(
   is.na(`Blocked flag`)
