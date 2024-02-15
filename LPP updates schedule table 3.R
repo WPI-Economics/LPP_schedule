@@ -74,6 +74,7 @@ table <- update.df %>%
               
               "Data source name" = colDef(width = 300),
               url = colDef(show = F),
+              
               "Blocked flag" = colDef(show = F),
               "Data source frequency" = colDef(show = F)
 
