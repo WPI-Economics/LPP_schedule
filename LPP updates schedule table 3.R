@@ -9,13 +9,13 @@ library(shiny)
 library(lubridate)
 library(htmltools)
 
-update.df <- readRDS("LPP_schedule_data_2024-02-15.RDS") #WILL NEED TO EDIT DATE HERE
+update.df <- readRDS("LPP_schedule_data_2024-11-05.RDS") #WILL NEED TO EDIT DATE HERE
 update.df$`Source data release date` <- lubridate::as_date(dmy(update.df$`Indicator update date`))
 update.df$`Indicator update date` <- NULL
 update.df$`Data source frequency` <- str_to_title(update.df$`Data source frequency`)
-#remove 2025 updates
+#remove 2026+ updates
 update.df <- update.df %>% filter(
-  `Source data release date` < "2024-12-31"
+  `Source data release date` < "2025-12-31"
 )
 
 update.df$`Data reference period next update` <- update.df$time_period_next
@@ -25,44 +25,51 @@ update.df <- update.df %>% filter(
   is.na(`Blocked flag`)
 )
 
+#create a processing month
 update.df <- update.df %>% 
-  mutate(
-    "Update Month" = 
-      #when out in the first week of a month prcess in that monthe otherwise move to next month
-      case_when( day(`Source data release date`) < 7 ~  month(`Source data release date`),
-        day(`Source data release date`) >= 7 ~ month(`Source data release date`)+1
-      )
-  )
+  mutate("Processing date" = `Source data release date`+ 14,#add in extra 14 days from release date so data that arrives late in a month gets pushed into the next month
+         #"Processing month/year" = format(`Processing date`, "%B %Y"),
+          #if processing date is before todays date then we will group into "backlog"
+         "Processing month/year" = if_else(`Processing date` < Sys.Date(), "Backlog", format(`Processing date`, "%B %Y"))
+         )
+# update.df <- update.df %>% 
+#   mutate(
+#     "Update Month" = 
+#       #when out in the first week of a month process in that month otherwise move to next month
+#       case_when( day(`Source data release date`) < 7 ~  month(`Source data release date`),
+#         day(`Source data release date`) >= 7 ~ month(`Source data release date`)+1
+#       )
+#   )
+# 
+# update.df <- update.df %>% 
+#   mutate(
+#     "Month" = case_when(
+#       `Update Month` == 1 ~ "January",
+#       `Update Month` == 2 ~ "February",
+#       `Update Month` == 3 ~ "March",
+#       `Update Month` == 4 ~ "April",
+#       `Update Month` == 5 ~ "May",
+#       `Update Month` == 6 ~ "June",
+#       `Update Month` == 7 ~ "July",
+#       `Update Month` == 8 ~ "August",
+#       `Update Month` == 9 ~ "September",
+#       `Update Month` == 10 ~ "October",
+#       `Update Month` == 11 ~ "November",
+#       `Update Month` == 12 ~ "December",
+#       `Update Month` == 13 ~ "January 2026"
+#     )
+#   )
 
-update.df <- update.df %>% 
-  mutate(
-    "Month" = case_when(
-      `Update Month` == 1 ~ "January",
-      `Update Month` == 2 ~ "February",
-      `Update Month` == 3 ~ "March",
-      `Update Month` == 4 ~ "April",
-      `Update Month` == 5 ~ "May",
-      `Update Month` == 6 ~ "June",
-      `Update Month` == 7 ~ "July",
-      `Update Month` == 8 ~ "August",
-      `Update Month` == 9 ~ "September",
-      `Update Month` == 10 ~ "October",
-      `Update Month` == 11 ~ "November",
-      `Update Month` == 12 ~ "December",
-      `Update Month` == 13 ~ "January 2025"
-    )
-  )
 
 
-
-update.df <- arrange(update.df, `Update Month`) %>% select(-`Update Month`)
+update.df <- update.df %>%  arrange(`Processing date`) %>% select(-`Processing date`)
 
 
 #The table 
 update.df2 <- update.df
 table <- update.df %>%
   
-  reactable(groupBy = "Month", 
+  reactable(groupBy = "Processing month/year", 
             columns = list(
               Code = colDef(aggregate = "unique"),
               `Theme`=  colDef(aggregate = "frequency"),
