@@ -62,7 +62,7 @@ update.df <- update.df %>%
 
 
 
-update.df <- update.df %>%  arrange(`Processing date`) %>% select(-`Processing date`)
+update.df <- update.df %>%  arrange(`Processing date`) %>% select(-c(`Processing date`, `Sub-theme`))
 
 
 #The table 
